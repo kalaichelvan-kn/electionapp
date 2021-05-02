@@ -123,6 +123,10 @@
               "devServerTarget": "electionapp:serve:production"
             }
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {}
         }
       }
     }

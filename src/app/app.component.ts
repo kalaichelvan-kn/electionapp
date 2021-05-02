@@ -1,41 +1,5 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
-interface Country {
-  name: string;
-  flag: string;
-  area: number;
-  population: number;
-}
-
-const COUNTRIES: Country[] = [
-  {
-    name: 'Russia',
-    flag: 'f/f3/Flag_of_Russia.svg',
-    area: 17075200,
-    population: 146989754
-  },
-  {
-    name: 'Canada',
-    flag: 'c/cf/Flag_of_Canada.svg',
-    area: 9976140,
-    population: 36624199
-  },
-  {
-    name: 'United States',
-    flag: 'a/a4/Flag_of_the_United_States.svg',
-    area: 9629091,
-    population: 324459463
-  },
-  {
-    name: 'China',
-    flag: 'f/fa/Flag_of_the_People%27s_Republic_of_China.svg',
-    area: 9596960,
-    population: 1409517397
-  }
-];
-
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -44,7 +8,6 @@ const COUNTRIES: Country[] = [
 export class AppComponent {
 
   title = 'electionapp';
-  countries = COUNTRIES;
   result = [];
   partyResult = [];
   constructor(public http: HttpClient) {
@@ -74,7 +37,7 @@ export class AppComponent {
   getResults = () => {
     this.result = [];
     for (var i = 1; i < 40; i++){
-      this.http.get<any>('https://thanthiresults.online/v1/districtStats/'+i).subscribe((res) => {
+      this.http.get<any>('https://election.thanthitv.com/api/districtStats/'+i+'.json').subscribe((res) => {
         // @ts-ignore
         this.parseDetails(res);
       });
@@ -84,15 +47,9 @@ export class AppComponent {
     const districtDetails = response.district_stats;
     const districtName = districtDetails.name;
     const constituency_stats = districtDetails.constituency_stats;
-    // console.log(districtName);
-    // console.log(constituency_stats);
     var resultArray: { districtName: any; name: any; }[] = [];
     var tRes = null;
     constituency_stats.forEach( (obj:any) => {
-      var dmk = "";
-      var admk = "";
-      var dcolor = '';
-      var acolor = '';
       var leader = '';
       var voteCount = '';
       // @ts-ignore
@@ -102,24 +59,10 @@ export class AppComponent {
           leader = o.coalition_code;
           voteCount = o.no_of_votes;
         }
-        // if(o.coalition_code=="DMK+") {
-        //   dmk = o.no_of_votes;
-        //   if(o.is_leading){
-        //     dcolor = "bg-success text-white";
-        //     acolor = "bg-danger text-white"
-        //   }
-        // }
-        // if(o.coalition_code=="ADMK+") {
-        //   admk = o.no_of_votes;
-        //   if(o.is_leading){
-        //     acolor = "bg-success text-white";
-        //     dcolor = "bg-danger text-white"
-        //   }
-        // }
       });
       tRes = {districtName: districtName,
         name: obj.name,
-        resultAnnounced: obj.is_result_announced == 0 ? 'காத்திருக்கிறது' : obj.is_result_announced,
+        resultAnnounced: obj.is_result_announced == 0 ? 'காத்திருக்கிறது' : 'அறிவிக்கப்பட்டது',
         currentRound: obj.current_round,
         leader: leader,
         voteCount: voteCount
